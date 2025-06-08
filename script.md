@@ -1,16 +1,12 @@
 # Joint demo script
 
-This morning we've heard from each individual OMSF project about what they've been up to and where they're going next.
-Throughout this afternoon, we'll be hearing from some industry partners about what they've built using OMSF products.
-In between these spaces, I'm going to spend the next few minutes showing off how some OMSF products work with each
-other in addition to diving slightly deeper into a few capabilities along the way. Everything will be something that
+While I'm here representing Open Force Field specifically, I'm going to spend the next few minutes showing off how some OMSF products work with each
+other in addition to diving slightly deeper into a few Open Force Field capabilities along the way. Most of what I'm showing will be something that
 you can run right now, so as excited as we are about things like SMIRNOFF protein force fields or co-folding at scale
 with OpenFold 3, I'll be focusing on released software you can install and use right now.
 
-0:40
-
 If you want to follow along, the materials are available on GitHub at the following link:
-https://github.com/openforcefield/joint-demo
+https://github.com/j-wags/joint-demo
 
 Let's say we're a team of computational chemists supporting a team of medicinal chemists designing ligands for
 biological targets. We are interested in MCL-1, which is a well-known target for oncology, and trying to inhibit its
@@ -42,18 +38,12 @@ Visual inspection will show you this this is a congeneric series based around a 
 substitution of the heterocycle and elaborations at both ends.
 
 Our overarching goal is to asses how strongly each ligand binds to MCL1, but we also care if they'd have toxic off-target
-effects. Off-target effects fall under the bucket of adsorption, distribution, metabolism, excretion, and toxicity (ADMET). Here, we'll use OpenADMET's CLI to evaluate this ligand set against a series of CYP anti-targets, which are a class of proteins that may break down a drug molecule. A pass
-through our dataset at this stage isn't free, but it's relatively quick and cheap, almost certainly more efficient than
-trying to "fix" a series at a later stage, after lead optimization.
-OpenADMET also has a Python API and ships some models on huggingface.
+effects. Off-target effects fall under the bucket of adsorption, distribution, metabolism, excretion, and toxicity, or ADMET. In the future, you'll be able to use OpenADMET's CLI to evaluate this ligand set against a series of cytochrome P450 anti-targets, which are a class of proteins that break down small molecules, and which are common drivers of unwanted drug-drug interactions.
 
-_go into notebook, run openadmet predict cell_
-
-A reminder here that the models used in this notebook are simple demonstration models not fully ready for production.
-More advanced models are currently being developed, and in the future models will also improve as the OpenADMET project
+OpenADMET models are currently being developed, and in the future models will also improve as the OpenADMET project
 starts to receive data from their partners at Octant and UCSF.
 
-For the purposes of our exercise lets hone in on CYP3A4 inhibition since CYP3A4 is responsible for large proportion of
+For the purposes of our exercise, lets zoom in on CYP3A4 inhibition since CYP3A4 is responsible for large proportion of
 hepatic metabolism relative to other CYPs. For starters, let's use use a cutoff of a predicted IC50 of 2.5 micromolar,
 which corresponds to a pIC50 of 5.6. This is not realistic for a production run, but it's acceptable for our uses
 today.
@@ -64,7 +54,7 @@ With a little bit of Pandas, we can quickly get a subset of the original ligand 
 value. We are left with 14 ligands out of our original 18.
 
 Having filtered out ligands with CYP3A4 issues, we are now moving on to free energy calculations of the remaining
-ligands, which we will dow ith OpenFE. There are a few ways to use OpenFE's tooling, there is a CLI which provides easy
+ligands, which we will do with OpenFE. There are a few ways to use OpenFE's tooling - there is a CLI which provides easy
 access to the most commonly-used features and a Python API which enables a wider set of more advanced features and
 options.  Here we'll be using the CLI, but there's lots of cool stuff in the API too.
 
@@ -79,7 +69,7 @@ _run plan-rbfe-network call_
 
 This sets up a series of alchemical transformations between ligands which will be used to compute relative binding free energies with a minimum of computational cost.
 Based on our settings file, the Kartograph atom
-mapper is used and a minimal spanning network is generated. Sage is used for small molecule parameters, so AM1-BCC
+mapper is used and a minimal spanning network is generated. Open Force Field's Sage model is used for small molecule parameters, so AM1-BCC
 partial charges are used. We can see some valuable information is logged.
 
 The main output of this command is a bunch of JSON files, each describing a particular transformation. There's also a
@@ -98,42 +88,15 @@ With default options and the recent version 1.4.0, we get a pretty table of the 
 corresponding uncertainty values.
 
 So far we've taken a set of ligands and a known target, filtered out potential ADMET liabilities with OpenADMET's CLI,
-and use OpenFE's CLI to predict relative binding free energies using OpenFF's small molecule force field Sage.
+and used OpenFE's CLI to predict relative binding free energies using OpenFF's small molecule force field Sage.
 
 _pause_
 
-7:30
 
 Next, I want to dig deeper into some of these tools we've talked about so far in our HTS pipeline, and then finish up
 with a few examples of other use cases enabled by OpenFF force fields and infrastructure.
 
-Let's have a closer look at the ADMET predictions. You may have noticed we ran models for 4 different CYPs and
-only looked at one. Let's now have a look at predicted pIC50 values for each of these ligands with each anti-target.
-
-_run plotting cell_
-
-Reminder that smaller pIC50 values correspond to larger IC50, so weaker CYP binders are on the left and stronger
-binders are on the right.
-
-This data would suggest that these compounds have some off target CYP inhibition issues, most severely for CYP1A2
-average pIC50 of ~6.
-
-But how good are these models, really? Are all of these ligands really binding to CYPs in the range of 1-10 micromolar?
-
-The OpenADMET team thinks these models generally over-predict binding strength due to the ChEMBL data itself having a
-positive skew.  That is to say, the dataset probably skews towards CYP inhibitors (high p) and away from non-binders
-(low p) and doesn't reflect very well the breadth of chemistry that you might design ligands with.
-
-_show cell visualizing pChEMBL data_
-
-We see that this underlying data from ChEMBL has a heavy skew towards strong CYP inhibitors and not much data on weaker
-binders. This KDE plots are distributions over approximately 8000 molecules.
-This probably limits the applicability to arbitrary chemistries in an HTS context, and highlights the need for
-vastly more data collection of broader chemistries, ideally guided by missing coverage in the datasets.
-
-10:30
-
-Next let's dig into the OpenFE CLI a little bit more.
+Let's start by digging into the OpenFE CLI a little bit more.
 
 Earlier when we ran `openfe plan-rbfe-network`, one of the steps involved assigning partial charges separately from how
 other force field parameters are applied. AM1-BCC can occasionally give inconsistent results or meaningfully different
@@ -144,12 +107,14 @@ There is a separate command in the CLI which controls this step.
 _run openfe charge-molecules cell_
 
 There are a number of other options that can be tinkered with in this command, just like other CLI calls, such as using
-OpenEye to generate AM1-BCC ELF10 charges or using NAGL to generate GNN charges. These options can be passed in through
-the `settings.yaml` file.
+OpenEye to generate AM1-BCC ELF10 charges or using Open Force Field's new NAGL tool to generate charges using a graph neural network. These options can be passed in through
+the `settings.yaml` file. Let's try using NAGL with just a single core, as opposed to the 
 
 _run openfe charge-molecules cells with NAGL options_
 
-Next, let's talk about network planning, something else a practitioner can tinker with via the settings file. Konnektor
+With NAGL, we only used a single core to assign charges, as opposed to the 8 using explicit AM1BCC, and it still finished faster.
+
+Next, let's talk about network planning, something else a practitioner can tinker with via the settings file. Open Free Energy's Konnektor tool
 has has implemented a bunch of different networks, and a subset of them have been integrated into OpenFE. The default
 network, which we used earlier, is a minimal spanning tree, which minimizes the number of edges that can connect all
 nodes in a network.
@@ -164,8 +129,6 @@ _show radial.yaml, run plan-rbfe-network, show new visualization_
 
 There are plenty more options exposed in the CLI and documented in the CLI reference, and further more functionality
 available in the Python API.
-
-14:00
 
 Finally, I want to show off some things that we can do with OpenFF infrastructure. So far in this demo, OpenFF force
 fields have been used by OpenFE under the hood, by default, for its small molecule parameters.  There's much more
@@ -182,7 +145,7 @@ one-liner to prepare an OpenMM system and a little bit of boilerplate to get the
 up into a separate function in the file `simulate.py` if you want to have a look. This function returns an NGLview
 widget of the trajectory, and that's all it takes to run MD from RDKit.
 
-_show aspirin trajectory_ 
+_show lig_3 trajectory_ 
 
 Next we are going to use OpenFF tooling to simulate protein-ligand complexes. The process is similar to running
 simulations of a single molecule. The main difference is that we need to prepare a topology, which is simply a
@@ -192,13 +155,13 @@ going to run these cells ahead of time so the simulation has time to run.
 For starters, we'll load a PDB file of a protein-ligand complex into a `Topology` object, also passing a SMILES pattern
 representing the ligand. If we have a look, that looks good.
 
-_show protein-ligand complex_
+_show protein-ligand complex, run solvation_
 
 Since we don't want to simulate this in vacuum, we need to add some solvent. There are a few ways of doing this, and
 for systems with only water and canonical residues, PDBFixer is a good choice.  Now we have the same protein-ligand
 complex solvated in water with ions.
 
-_show solvated protein-ligand complex_
+_show solvated protein-ligand complex, run next cell_
 
 The next step is to load a force field appropriate for this system; we're going to use the same Sage force field for
 the small molecule parameters and for the protein we'll use a SMIRNOFF port of ff14SB. One could slot in other force
@@ -218,11 +181,9 @@ Here we've taken a protein-ligand complex in a PDB file and used OpenFF tooling 
 
 _pause_
 
-(protein-ligand complex section: 3:00)
-
 Sometimes your amino acids may be non-canonical, or even simply a small molecule covalently linked to a side chain.
 OpenFF has a prototype post-translational modification workflow, enabled by new science and infrastructure, which
-enables simulating these systems with a modest amount of prep.
+enables simulating these systems with a modest amount of preparation.
 
 Let's say we have a flourescent dye tagged to our protein. We can load our dye as a standalone molecule like any other
 small molecule and have a look. This molecule has has a maleimide group which can take part in a click reaction with
@@ -235,7 +196,7 @@ That reaction can be written up in SMARTS and visualized with RDKit.
 _run RDKit reaction cell_
 
 We're ultimately going to load this system as a PDB file through OpenFF Pablo, a new tool being developed for better
-PDB interoperability throughout OpenFF infrastructure. A core feature of Pablo is support for custom residue
+biopolymer loading in OpenFF infrastructure. A core feature of Pablo is support for custom residue
 definitions. These can be defined in a few ways and in this case, it's easiest to make one from an OpenFF molecule. We
 want the residue to represent the cysteine modified with the dye, so we need to get that into a single-molecule
 representation. After reaction, we have a single-molecule representation of this modified residue with some atom names changed to match the PDB file.
@@ -244,12 +205,12 @@ That's just about all the set up we need to do. The last step is creating our re
 a canned definition of a peptide bond. We can pass this to Pablo's `topology_from_pdb` function and have a look at the
 result.
 
+_run 3d viz cell_
+
 Now that we have a topology, we can do just what we did before - take it and a force field and pass it off to OpenMM,
 then visualize the result. A final wrinkle here is that, due to the modified residue, NAGL was used to assign charges
 to the protein, although ff14SB charges were backfilled onto standard residues so only the modified cysteined and dye
 ended up with end up with NAGl-assigned charges.
-
-22:10
 
 Finally, I wanted to demonstrate one of the many powerful features of NAGL, which is how quickly it can assign partial
 charges to large ligands. I've extracted the ligand from the 5FDR PDB record, which is larger than that ligands in the
