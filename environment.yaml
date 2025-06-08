@@ -10,6 +10,8 @@ dependencies:
 - openfe ==1.4.0
 - konnektor
 - python 3.11.*
+#- pydantic <2
+- lightning =2.5.1
 - nglview *
 - pymol-open-source
 - jupyterlab *
@@ -39,8 +41,8 @@ dependencies:
 - loguru
 - seaborn
 - pip:
-  - openadmet-toolkit @ git+https://github.com/OpenADMET/openadmet-toolkit.git
-  - openadmet-models @ git+https://github.com/OpenADMET/openadmet-models.git
+  - openadmet-toolkit @ git+https://github.com/OpenADMET/openadmet-toolkit.git@f975b45d55d7dc6eac17331083b4cc28328de6bf
+  - openadmet-models @ git+https://github.com/OpenADMET/openadmet-models.git@5da70e1d0f7067a3a47485e5f215a0c6cf8f45ec
   - phx-class-registry
   - email-validator
   - git+https://github.com/OpenADMET/mtenn.git@remove_dgl
