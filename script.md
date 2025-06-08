@@ -1,8 +1,6 @@
 # Joint demo script
 
-This morning we've heard from each individual OMSF project about what they've been up to and where they're going next.
-Throughout this afternoon, we'll be hearing from some industry partners about what they've built using OMSF products.
-In between these spaces, I'm going to spend the next few minutes showing off how some OMSF products work with each
+I'm going to spend the next few minutes showing off how some OMSF products work with each
 other in addition to diving slightly deeper into a few capabilities along the way. Everything will be something that
 you can run right now, so as excited as we are about things like SMIRNOFF protein force fields or co-folding at scale
 with OpenFold 3, I'll be focusing on released software you can install and use right now.
@@ -10,7 +8,7 @@ with OpenFold 3, I'll be focusing on released software you can install and use r
 0:40
 
 If you want to follow along, the materials are available on GitHub at the following link:
-https://github.com/openforcefield/joint-demo
+https://github.com/j-wags/joint-demo
 
 Let's say we're a team of computational chemists supporting a team of medicinal chemists designing ligands for
 biological targets. We are interested in MCL-1, which is a well-known target for oncology, and trying to inhibit its
@@ -124,10 +122,6 @@ The OpenADMET team thinks these models generally over-predict binding strength d
 positive skew.  That is to say, the dataset probably skews towards CYP inhibitors (high p) and away from non-binders
 (low p) and doesn't reflect very well the breadth of chemistry that you might design ligands with.
 
-_show cell visualizing pChEMBL data_
-
-We see that this underlying data from ChEMBL has a heavy skew towards strong CYP inhibitors and not much data on weaker
-binders. This KDE plots are distributions over approximately 8000 molecules.
 This probably limits the applicability to arbitrary chemistries in an HTS context, and highlights the need for
 vastly more data collection of broader chemistries, ideally guided by missing coverage in the datasets.
 
