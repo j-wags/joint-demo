@@ -1,7 +1,7 @@
 # Joint demo script
 
-While I'm here representing Open Force Field specifically, I'm going to spend the next few minutes showing off how some OMSF products work with each
-other in addition to diving slightly deeper into a few Open Force Field capabilities along the way. Most of what I'm showing will be something that
+While I'm here representing Open Force Field specifically, I'm going to spend the next few minutes showing off how some OMSF projects work with each
+other in addition to diving slightly deeper into a few Open Force Field capabilities along the way. This demo will show off not just Open Force Field, but also other OMSF projects -  OpenFold, Open Free Energy, and OpenADMET. Most of what I'm showing will be something that
 you can run right now, so as excited as we are about things like SMIRNOFF protein force fields or co-folding at scale
 with OpenFold 3, I'll be focusing on released software you can install and use right now.
 
