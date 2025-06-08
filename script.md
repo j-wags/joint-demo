@@ -1,11 +1,9 @@
 # Joint demo script
 
-I'm going to spend the next few minutes showing off how some OMSF products work with each
-other in addition to diving slightly deeper into a few capabilities along the way. Everything will be something that
+While I'm here representing Open Force Field specifically, I'm going to spend the next few minutes showing off how some OMSF products work with each
+other in addition to diving slightly deeper into a few Open Force Field capabilities along the way. Most of what I'm showing will be something that
 you can run right now, so as excited as we are about things like SMIRNOFF protein force fields or co-folding at scale
 with OpenFold 3, I'll be focusing on released software you can install and use right now.
-
-0:40
 
 If you want to follow along, the materials are available on GitHub at the following link:
 https://github.com/j-wags/joint-demo
@@ -40,18 +38,12 @@ Visual inspection will show you this this is a congeneric series based around a 
 substitution of the heterocycle and elaborations at both ends.
 
 Our overarching goal is to asses how strongly each ligand binds to MCL1, but we also care if they'd have toxic off-target
-effects. Off-target effects fall under the bucket of adsorption, distribution, metabolism, excretion, and toxicity (ADMET). Here, we'll use OpenADMET's CLI to evaluate this ligand set against a series of CYP anti-targets, which are a class of proteins that may break down a drug molecule. A pass
-through our dataset at this stage isn't free, but it's relatively quick and cheap, almost certainly more efficient than
-trying to "fix" a series at a later stage, after lead optimization.
-OpenADMET also has a Python API and ships some models on huggingface.
+effects. Off-target effects fall under the bucket of adsorption, distribution, metabolism, excretion, and toxicity, or ADMET. In the future, you'll be able to use OpenADMET's CLI to evaluate this ligand set against a series of cytochrome P450 anti-targets, which are a class of proteins that break down small molecules, and which are common drivers of unwanted drug-drug interactions.
 
-_go into notebook, run openadmet predict cell_
-
-A reminder here that the models used in this notebook are simple demonstration models not fully ready for production.
-More advanced models are currently being developed, and in the future models will also improve as the OpenADMET project
+OpenADMET models are currently being developed, and in the future models will also improve as the OpenADMET project
 starts to receive data from their partners at Octant and UCSF.
 
-For the purposes of our exercise lets hone in on CYP3A4 inhibition since CYP3A4 is responsible for large proportion of
+For the purposes of our exercise, lets zoom in on CYP3A4 inhibition since CYP3A4 is responsible for large proportion of
 hepatic metabolism relative to other CYPs. For starters, let's use use a cutoff of a predicted IC50 of 2.5 micromolar,
 which corresponds to a pIC50 of 5.6. This is not realistic for a production run, but it's acceptable for our uses
 today.
@@ -62,7 +54,7 @@ With a little bit of Pandas, we can quickly get a subset of the original ligand 
 value. We are left with 14 ligands out of our original 18.
 
 Having filtered out ligands with CYP3A4 issues, we are now moving on to free energy calculations of the remaining
-ligands, which we will dow ith OpenFE. There are a few ways to use OpenFE's tooling, there is a CLI which provides easy
+ligands, which we will do with OpenFE. There are a few ways to use OpenFE's tooling - there is a CLI which provides easy
 access to the most commonly-used features and a Python API which enables a wider set of more advanced features and
 options.  Here we'll be using the CLI, but there's lots of cool stuff in the API too.
 
@@ -77,7 +69,7 @@ _run plan-rbfe-network call_
 
 This sets up a series of alchemical transformations between ligands which will be used to compute relative binding free energies with a minimum of computational cost.
 Based on our settings file, the Kartograph atom
-mapper is used and a minimal spanning network is generated. Sage is used for small molecule parameters, so AM1-BCC
+mapper is used and a minimal spanning network is generated. Open Force Field's Sage model is used for small molecule parameters, so AM1-BCC
 partial charges are used. We can see some valuable information is logged.
 
 The main output of this command is a bunch of JSON files, each describing a particular transformation. There's also a
@@ -96,11 +88,10 @@ With default options and the recent version 1.4.0, we get a pretty table of the 
 corresponding uncertainty values.
 
 So far we've taken a set of ligands and a known target, filtered out potential ADMET liabilities with OpenADMET's CLI,
-and use OpenFE's CLI to predict relative binding free energies using OpenFF's small molecule force field Sage.
+and used OpenFE's CLI to predict relative binding free energies using OpenFF's small molecule force field Sage.
 
 _pause_
 
-7:30
 
 Next, I want to dig deeper into some of these tools we've talked about so far in our HTS pipeline, and then finish up
 with a few examples of other use cases enabled by OpenFF force fields and infrastructure.
