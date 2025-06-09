@@ -257,3 +257,15 @@ This is just a small sample of what can be done with OMSF tools, however. We're 
 them in the future.
 
 <Credits>
+
+
+
+OpenFE time per edge - GPU hours? RBFE vs ABFE? Can multiple GPUs work on the same edge simultaneously? Wall-hours are the current bottleneck (not GPU hours).  
+
+Make example for membrane protein simulation
+
+OpenFold keep-this-part-the-same-and-just-model-the-missing-loop, or model-the-pocket-only-with-this-ligand. 
+
+Protonation assignment - MOE, Orion (NES), Cresset, Schrodinger generally. ProPKA is in schrodinger. 
+
+
